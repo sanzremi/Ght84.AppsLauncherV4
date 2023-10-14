@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppsLauncherConfiguration>
+   <Executables>
+     <Executable>
+       <Code>NOTEPAD</Code>
+       <TargetPath>notepad.exe</TargetPath>
+       <AlternativeTargetPath></AlternativeTargetPath>
+     </Executable>
+     <Executable>
+       <Code>FIREFOX</Code>
+       <TargetPath>C:\Program Files\Mozilla Firefox\firefox.exe</TargetPath>
+       <AlternativeTargetPath>C:\Program Files\Mozilla Firefox\firefox.exe</AlternativeTargetPath>
+     </Executable>
+
+   </Executables>
+
+  <Commands>
+		<Command>
+			<Id>1</Id> 
+			<Code>NOTEPAD</Code>
+			<Label></Label>
+			<Comment></Comment>
+			<Type>EXE</Type>
+			<ExecutableCode>NOTEPAD</ExecutableCode>
+			<Arguments></Arguments>
+			<InformationMessage></InformationMessage>
+			<WarningMessage></WarningMessage>
+			<ADGroups></ADGroups> 
+		</Command>
+		<Command>
+			<Id>2</Id> 
+			<Code>GOOGLE</Code>
+			<Label></Label>
+			<Comment></Comment>
+			<Type>EXE</Type>
+      <ExecutableCode>FIREFOX</ExecutableCode>
+			<Arguments>https://www.chausson.fr/%IPP%/$IPP$</Arguments>
+			<InformationMessage></InformationMessage>
+			<WarningMessage></WarningMessage>
+			<ADGroups></ADGroups> 
+		</Command>
+	</Commands>
+</AppsLauncherConfiguration>
+
+
