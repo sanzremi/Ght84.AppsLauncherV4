@@ -1,10 +1,6 @@
-﻿using Ght84.AppsLauncherLibrary.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 // v4
@@ -20,7 +16,6 @@ namespace Ght84.AppsLauncherManager
         [STAThread]
         static void Main()
         {
-
 
             // Si cette application est déjà lancée dans la même session, on ne la lance qu'une fois
             if (ApplicationIsAlreadyRunning())

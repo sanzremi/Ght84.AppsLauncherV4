@@ -65,6 +65,34 @@ namespace Ght84.AppsLauncherLibrary.Helpers
             }
         }
 
+        public static string WrapperUnderRDSWindowsToCloseClassName
+        {
+            get
+            {
+                string className = ConfigurationManager.AppSettings.Get("AppsLauncher_WrapperUnderRDS_WindowsToCloseClassName");
+                if (string.IsNullOrEmpty(className))
+                {
+                    throw new Exception("Le paramètre 'AppsLauncher_WrapperUnderRDS_WindowsToCloseClassName' est absent ou vide dans le fichier de configuration app.config");
+                }
+
+                return className;
+            }
+        }
+
+        public static string WrapperUnderRDSWindowsToCloseTitle
+        {
+            get
+            {
+                string title = ConfigurationManager.AppSettings.Get("AppsLauncher_WrapperUnderRDS_WindowsToCloseTitle");
+                if (string.IsNullOrEmpty(title))
+                {
+                    throw new Exception("Le paramètre 'AppsLauncher_WrapperUnderRDS_WindowsToCloseTitle' est absent ou vide dans le fichier de configuration app.config");
+                }
+
+                return title;
+            }
+        }
+
 
     }
 }

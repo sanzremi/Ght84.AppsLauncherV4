@@ -1,4 +1,5 @@
-﻿using Ght84.AppsLauncherLibrary.Helpers;
+﻿using AutoIt;
+using Ght84.AppsLauncherLibrary.Helpers;
 using Ght84.AppsLauncherLibrary.UdpCommunication;
 using NLog;
 using System;
@@ -11,14 +12,6 @@ namespace Ght84.AppsLauncherWrapper
 {
     class Program
     {
-        [DllImport("user32.dll")]
-        private static extern int FindWindow(string lpClassName, string lpWindowName);
-        [DllImport("user32.dll")]
-        private static extern int SendMessage(int hWnd, uint Msg, int wParam, int lParam);
-        private const int WM_SYSCOMMAND = 0x0112;
-        private const int SC_CLOSE = 0xF060;
-
-
 
         private static string _codeEnv;
         private static bool _redirectCall = false;
@@ -38,6 +31,13 @@ namespace Ght84.AppsLauncherWrapper
                 /// Permettant de savoir si l'appel contextuel (AppsLauncherWrapper executé depuis une session RSD) être exécuté 
                 /// localement (sur la session RDS) ou à distance (sur le PC client hote qui a démarré la session RDS) 
                 _redirectCall = RegistryHelper.GetFlagRedirectCall();
+
+
+                // Si RedirectCall est true, alors on ferme automatiquement la fenetre parasite du navigateur (Chrome) qui a conduit à l'exécution du Wrapper
+                // (Problème rencontré notamment avec EASILY exécuté en session RDS)
+                // Exemple url lancé : appslauncher:COMMAND:=DPI_TRAKCARE_VISU|USR_MATRICULE:=051284|PAT_IPP_LOCAL:=230002084|PAT_EPISODE:=
+                if (_redirectCall) CloseWrapperWindowsWebNavigator();
+
 
                 // Port UDP pour joindre par socket le service Ght84.AppsLauncherDispatcher
                 int _udpPort = ConfigurationHelper.WrapperToDispatcherUdpPort;
@@ -82,7 +82,7 @@ namespace Ght84.AppsLauncherWrapper
 
                 _logger.Debug($"Envoi du message sur le socket UDP : {jsonMessage}");
 
-                _logger.Info($"Envoi réussi du message '{jsonMessage}' par socket UDP au service Ght84.AppsLauncherDispatcher : ip {ipAndHost.Ip}, host {ipAndHost.Host}, port {_udpPort.ToString()}");
+                _logger.Info($"Envoi réussi du message '{jsonMessage}' par socket UDP au service Ght84.AppsLauncherDispatcher du poste client : ip {ipAndHost.Ip}, host {ipAndHost.Host}, port {_udpPort.ToString()}");
 
             }
             catch (Exception ex)
@@ -161,7 +161,7 @@ namespace Ght84.AppsLauncherWrapper
                 {
                     // On récupère la liste des adresses ip du client Ts
                     string ipV4Adress = GetIpV4Adress(TsClientName);
-                    ipAndHost = new IpAndHost(ipV4Adress, host);
+                    ipAndHost = new IpAndHost(ipV4Adress, TsClientName);
 
                 }
                 catch (Exception ex)
@@ -226,24 +226,31 @@ namespace Ght84.AppsLauncherWrapper
 
         }
 
-        private void CloseWindows()
+        private static void CloseWrapperWindowsWebNavigator()
         {
-            // Retrieve the handler of the window
-            int iHandle = FindWindow("Notepad", "Untitled - Notepad");
-            if (iHandle > 0)
+
+            // Exemple [CLASS:Chrome_WidgetWin_1]
+            string className = ConfigurationHelper.WrapperUnderRDSWindowsToCloseClassName;
+
+            // Exemple Sans titre - Google Chrome
+            string title = ConfigurationHelper.WrapperUnderRDSWindowsToCloseTitle;
+
+            // Recherche par autoit de la fenetre du navigateur (Chrome, ...) par son ClassName et Title
+            // puis fermeture de celle-ci
+            IntPtr windowHandle = AutoItX.WinGetHandle(className, title);
+            if  (windowHandle == IntPtr.Zero)
             {
-                // Close the window using API
-                SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+                AutoItX.WinClose(windowHandle);
+                _logger.Debug($"La fenêtre avec clasName '{className}' et title '{title}' a été fermée");
             }
+            else
+            {
+                _logger.Error($"La fenêtre avec clasName '{className}' et title '{title}' n'a pas été trouvée. Impossible de fermer cette fenêtre");
+            }
+
+
         }
     }
 
 
-
-
-
-
-
-
-}
 }
